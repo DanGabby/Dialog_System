@@ -1,60 +1,70 @@
 #include "view.h"
-#include <iostream>
-#include <QTextStream>
-using namespace std;
+//#include <iostream>
+//#include <QTextStream>
+//using namespace std;
+#define END "End of dialog."
 
-View::View()
-{}
+View::View(QCoreApplication *app)
+{
+    this->app = app;
+}
 
 void View::Init()
 {
-    emit QuerySIGNAL("dialog start");
+    emit SIGNAL_Query("dialog start");
 }
 
 void View::ConsoleQuery()
 {
-    cin >> answer;
-    string query;
+    QTextStream qin(stdin);
+    qin >> answer;
+    QString query;
     query = question + ' ' + answer;
-    emit QuerySIGNAL(query);
+    emit SIGNAL_Query(query);
 }
 
 void View::Update()
 {
-    cout << question << endl;
-    // я этот цикл уже 3 раза скопировал,ЭТО ЖЕ C++, НАПИШИ ПРОЦЕДУРКУ ДЛЯ ОБРАБОТКИ МАССИВОВ, ЧЕССЛОВО
-    int i = 0;
-    while ((answers[i] != EMPTY_STRING_VAL) && (i < ANSWERS_MAX_NUMB))
-    {
-        cout << answers[i] << endl;
-        i++;
-    }
+//    qDebug() << question << endl;
+//    for (int i = 0; i < answers.length(); i++)
+//        qDebug() << answers[i] << endl;
+    // создаю экземпляр QTextStream каждый раз, когда нужен ввод-вывод консоли
+    // ну, так получилось
+    QTextStream qout(stdout);
+    qout << question << endl;
+    for (int i = 0; i < answers.length(); i++)
+        qout << answers[i] << endl;
 }
 
-void View::DataTransferStartSLOT()
+void View::SLOT_DataTransferStart()
 {
     // "обнуляем" поля данных
-    question =EMPTY_STRING_VAL;
-    for (int i = 0; i < ANSWERS_MAX_NUMB; i++)
-        answers[i] = EMPTY_STRING_VAL;
+    question.clear();
+    answers.clear();
 }
 
-void View::ReceiveQuestionSLOT(string question)
+void View::SLOT_ReceiveQuestion(QString question)
 {
     this->question = question;
 }
 
-void View::ReceiveAnswersSLOT(string answers[])
+void View::SLOT_ReceiveAnswers(QList<QString> answers)
 {
-    int i = 0;
-    while (answers[i] != EMPTY_STRING_VAL && i < ANSWERS_MAX_NUMB)
-    {
-        this->answers[i] = answers[i];
-        i++;
-    }
+    this->answers = answers;
 }
 
-void View::DataTransferEndSLOT()
+void View::SLOT_DataTransferEnd()
 {
+    // показать пользователю полученные даные
     Update();
+    // получить новый запрос
+    ConsoleQuery();
+}
+
+void View::SLOT_EndOfWork()
+{
+    QTextStream qout(stdout);
+    qout << END << endl;
+    // нужно как-то прервать цикл QT (не сработало)
+    app->exit();
 }

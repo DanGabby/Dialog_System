@@ -1,10 +1,22 @@
 #include "model.h"
 
-void Model::QueryReceivedSlot(string query)
+Model::Model(DialogStorage *storage)
+{
+    this->storage = storage;
+}
+
+void Model::SLOT_QueryReceived(QString query)
 {
     // получаю объект из формальной модели
-//    SemNetObj* obj = storage.GetByKey(query);
-    SemNetObj* obj = worker.Next(&storage,query);
+    SemNetObj* obj = worker.Next(storage,query);
     // "выполняю" этот объект    
-    obj->Execute(&dataSender);
+    obj->Execute(&signalSender);
+}
+
+void Model::SLOT_StartWork()
+{
+    // десерелизатор будет работать таким образом, что входная точка сценария окажется
+    // в DialogStorage под ключом "dialog start"
+    // чтобы корректно начать диалог, модель должна получить какой-то инициализирующий запрос
+    SLOT_QueryReceived(START);
 }

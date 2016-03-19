@@ -1,14 +1,15 @@
 #ifndef DIALOGWORKER_H
 #define DIALOGWORKER_H
-#include "semnetobj.h"
+#include "DSObjects/semnetobj.h"
 #include "hashtable.h"
+#include "dialogstorage.h"
 class DialogWorker
 {
 public:
     DialogWorker(){}
-    SemNetObj *Next(HashTable *storage, string query)
+    SemNetObj *Next(DialogStorage *storage, QString query)
     {
-        SemNetObj *obj = storage->GetByKey(query);
+        SemNetObj *obj = storage->Value(query);
         return obj;
     }
 };

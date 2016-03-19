@@ -1,11 +1,10 @@
 #ifndef PRESENTER_H
 #define PRESENTER_H
 #include <QObject>
-#include "view.h"
-#include "model.h"
-//#include "hashtable.h"
-//typedef HashTable ModelSemNet;
-
+#include "View/view.h"
+#include "Model/model.h"
+// после перехода на систему сигнал-слотов, презентер стал таким тонким, что я об него чуть не порезался
+// бизнес-логику размазало по всей программе (может перетащить всю логику в презентер?)
 class Presenter
 {
 public:    
@@ -17,7 +16,6 @@ public:
 private:
     View* view;
     Model* model;
-    // объект-контейнер даных
 };
 
 #endif // PRESENTER_H
